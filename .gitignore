@@ -1,0 +1,9 @@
+.DS_Store
+*.bak
+*.log
+node_modules
+/data
+/dist
+/lib
+/debug
+/.idea
