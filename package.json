@@ -1,8 +1,11 @@
 {
-  "name": "dake",
+  "name": "vbd",
   "version": "0.1.0",
-  "description": "A front-end construction for qimishu.com",
-  "main": "index.js",
+  "description": "A front-end construction base on fis3",
+  "main": "./lib",
+  "bin": {
+    "vbd": "bin/vbd.js"
+  },
   "scripts": {
     "autod": "autod",
     "watch": "fis3 release -wLd lib",
@@ -13,24 +16,50 @@
     "prepublish": "npm run build"
   },
   "author": "lmtdit",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
+    "babel-core": "~6.14.0",
+    "babel-register": "~6.14.0",
+    "clean-css": "~3.4.19",
+    "fis-parser-babel-6.x": "~1.1.0",
     "fis3": "~3.4.24",
     "fis3-hook-commonjs": "~0.1.25",
     "liftoff": "~2.3.0",
-    "minimist": "~1.2.0"
+    "minimist": "~1.2.0",
+    "mkdirp": "~0.5.1"
   },
   "devDependencies": {
     "autod": "^2.7.1",
     "babel-eslint": "^6.1.2",
+    "babel-plugin-transform-async-to-generator": "^6.8.0",
+    "babel-plugin-transform-decorators-legacy": "^1.3.4",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.8.0",
+    "babel-plugin-transform-es2015-for-of": "^6.8.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.14.0",
+    "babel-plugin-transform-es2015-parameters": "^6.11.4",
+    "babel-plugin-transform-es2015-spread": "^6.8.0",
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-stage-1": "^6.13.0",
     "babel-register": "^6.14.0",
     "eslint": "^3.6.0",
-    "eslint-config-airbnb": "^11.2.0",
+    "eslint-config-airbnb": "^12.0.0",
     "eslint-plugin-import": "^1.16.0",
     "mocha": "^3.0.2",
     "should": "^11.1.0",
     "thunk-mocha": "^1.0.6"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lmtdit/vbd.git"
+  },
+  "keywords": [
+    "vbd"
+  ],
+  "bugs": {
+    "url": "https://github.com/lmtdit/vbd/issues"
+  },
+  "homepage": "https://github.com/lmtdit/vbd#readme"
 }
