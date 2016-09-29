@@ -1,5 +1,5 @@
 module.exports = (content, file, conf) => {
-  if (!file.isHtml) return content;
+  if (!file.isHtmlLike) return content;
   return content.replace(/\/\*([\s\S]*?)\*\//g, '')
     .replace(/<!--([\s\S]*?)-->/g, '')
     .replace(/^\s+$/g, '')

@@ -1,8 +1,8 @@
+import fs from 'fs';
 import path from 'path';
 import fis from 'fis3';
-import mkdirp from 'mkdirp';
 import babel from './parser/babel';
-// import config from './config';
+import config from './config';
 
 
 const root = path.dirname(__dirname);
@@ -15,14 +15,23 @@ Object.defineProperty(global, 'vbd', {
   value: vbd
 });
 
-let isProjectRenamed = false;
+vbd.mkdirsSync = function mkdirsSync(dir, mode) {
+  if (fs.existsSync(dir)) return true;
+  if (mkdirsSync(path.dirname(dir), mode)) {
+    fs.mkdirSync(dir, mode);
+    return true;
+  }
+  return false;
+};
+
 function projectRename() {
+  let isProjectRenamed = false;
   const getTempRootFn = vbd.project.getTempRoot;
   vbd.project.getTempRoot = () => {
     if (!isProjectRenamed) {
       const appPkg = require(vbd.project.getProjectPath('package.json')); //  eslint-disable-line
       const tempRootPath = path.join(getTempRootFn(), appPkg.name || '');
-      mkdirp.sync(tempRootPath);
+      vbd.mkdirsSync(tempRootPath);
       vbd.project.setTempRoot(tempRootPath);
       vbd.project.getTempRoot = getTempRootFn;
       isProjectRenamed = true;
@@ -57,16 +66,18 @@ vbd.set('modules.commands', ['release', 'server']);
 vbd.define('parser-babel', babel());
 vbd.define('parser-babel-node', babel(babel.NODE));
 vbd.define('parser-babel-es2015', babel(babel.ESNEXT));
+vbd.define('parser-minify-html', require('./parser/minify'));
 vbd.define('optimizer-clean-css', require('./optimizer/clean-css'));
+vbd.define('postpackager-loader-config', require('./postpackager/loader-config'));
 
 // 默认以commonjs来组织前端代码结构
-// vbd.hook('commonjs');
+vbd.hook('commonjs');
 
 // 开发配置
 const cdnDomain = 'st.qimishu.com';
 
 vbd.set('project.ignore', [
-  'node_module/**',
+  'node_modules/**',
   'dist/**',
   '*.log',
   '**.sh',
@@ -76,18 +87,18 @@ vbd.set('project.ignore', [
   test: `//test.${cdnDomain}`,
   prod: `//${cdnDomain}`
 }).set('comboPattern', '/co/??%s');
-//
-// // 开发配置
-// config(vbd).forEach((val) => {
-//   vbd.match(...val);
-// });
 
-// 测试和生产配置
-// const testMedia = vbd.media('test');
-// const prodMedia = vbd.media('prod');
-// config.test.forEach((val) => {
-//   testMedia.match(...val);
-// });
-// config.prod.forEach((val) => {
-//   prodMedia.match(...val);
-// });
+// 生成项目配置
+const conf = config(vbd);
+const testMedia = vbd.media('test');
+const prodMedia = vbd.media('prod');
+conf.dev.forEach((val) => {
+  vbd.match(...val);
+});
+
+conf.test.forEach((val) => {
+  testMedia.match(...val);
+});
+conf.prod.forEach((val) => {
+  prodMedia.match(...val);
+});
