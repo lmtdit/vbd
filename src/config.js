@@ -1,14 +1,17 @@
-module.exports = (vdb) => {
+module.exports = (vbd) => {
   // 开发配置
   const dev = [
     ['**', {
-      domain: vdb.get('domain').dev
+      domain: vbd.get('domain').dev
     }],
     ['!{libs,apps,widgets,pages,views}/**', {
       release: false
     }],
     ['**.css', {
       useSprite: true
+    }],
+    ['**.es', {
+      parser: vbd.plugin('babel-es2015')
     }],
     ['{**.md,vbd-conf.js,package.json}', {
       release: false
