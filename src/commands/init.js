@@ -1,3 +1,4 @@
-module.exports = (vbd)=> {
-  console.log('Vbd project init...');
-}
+module.exports = (vbd) => {
+  return (argv, env, ...opts) => {
+  };
+};
