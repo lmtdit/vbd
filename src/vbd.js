@@ -11,24 +11,6 @@ Object.defineProperty(global, vbdInfo.name, {
   value: vbdInfo.name
 });
 
-// 把当前项目名作为第三方插件的前缀
-vbd.require.prefixes.unshift(vbdInfo.name);
-
-// 修改项目名称，并且插件的加载优先从当前项目的 node_modules 目录查找
-const cliRunFn = vbd.cli.run;
-Object.assign(vbd.cli, {
-  name: vbdInfo.name,
-  version: () => {
-    vbd.log.info(vbdInfo.version);
-  },
-  run: (argv, env, ...opts) => {
-    const dir = path.join(env.cwd, 'node_modules');
-    if (dir !== vbd.require.paths[0]) {
-      vbd.require.paths.unshift(dir);
-    }
-    return cliRunFn(argv, env, ...opts);
-  }
-});
 
 // 封装一个递归创建文件夹的函数，因为fis3.mkdir不支持递归创建
 const mkdirsSync = vbd.mkdirsSync = (dir, mode) => {
@@ -45,8 +27,8 @@ let isProjectRenamed = false;
 const getTempRootFn = vbd.project.getTempRoot;
 vbd.project.getTempRoot = () => {
   if (!isProjectRenamed) {
-    const appPkg = require(vbd.project.getProjectPath('package.json'));
-    const tempRootPath = path.join(getTempRootFn(), appPkg.name || '');
+    const appInfo = require(vbd.project.getProjectPath('package.json'));
+    const tempRootPath = path.join(getTempRootFn(), appInfo.name || '');
     vbd.mkdirsSync(tempRootPath);
     vbd.project.setTempRoot(tempRootPath);
     vbd.project.getTempRoot = getTempRootFn;
@@ -70,3 +52,37 @@ const defineFn = vbd.define = (...args) => {
   vbd.require._cache[name] = arg;
   return arg;
 };
+
+// 把当前项目名作为第三方插件的前缀
+vbd.require.prefixes.unshift(vbdInfo.name);
+
+//
+const cliRunFn = vbd.cli.run;
+Object.assign(vbd.cli, {
+  name: vbdInfo.name, // 修改项目名称
+  version: () => {
+    vbd.log.info(vbdInfo.version);
+  },
+  run: (argv, env, ...opts) => {
+    // 插件的加载优先从当前项目的 node_modules 目录查找
+    const paths = vbd.require.paths;
+    const dir = path.join(env.cwd, 'node_modules');
+    if (paths.indexOf(dir) === -1) vbd.require.paths.unshift(dir);
+    const cmdList = argv._;
+    const command = cmdList.shift();
+    switch (command) {
+      case 'server': {
+        if (!argv.port) argv.port = '5000';
+        return require('./commands/server')(vbd)(argv, env, ...opts);
+        break;
+      }
+      case 'init': {
+        vbd.log.info('Initialize Project ...\n');
+        return require('./commands/init')(vbd)(argv, env, ...opts);
+        break;
+      }
+      default:
+        return cliRunFn(argv, env, ...opts);
+    }
+  }
+});

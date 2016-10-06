@@ -5,7 +5,8 @@ const fis = require('fis3');
 fis.set('project.ignore', [
   'node_modules/**',
   '*.md',
-  'test/**'
+  'test/**',
+  'lib/**'
 ]);
 fis.match('**', {
   release: false

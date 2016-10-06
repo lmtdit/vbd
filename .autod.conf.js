@@ -3,14 +3,12 @@ module.exports = {
   prefix: '~',
   devprefix: '^',
   exclude: [
-    'lib',
     'test/fixtures'
   ],
   dep: [
     'fis3-hook-commonjs',
     'babel-register',
-    'babel-core',
-    'fis-parser-babel-6.x'
+    'babel-core'
   ],
   devdep: [
     'autod',

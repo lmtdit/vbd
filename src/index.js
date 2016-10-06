@@ -10,7 +10,8 @@ const root = path.dirname(__dirname);
 // 模块加载路径
 vbd.require.paths.unshift(path.join(root, 'node_modules'),
   path.join(root, 'node_modules/fis3/node_modules'));
-vbd.set('modules.commands', ['release', 'server', 'inspect', 'init']);
+
+vbd.get('modules.commands').unshift('release', 'inspect', 'server', 'init');
 
 // 安装本地自定义插件
 vbd.define('parser-babel', babel());
