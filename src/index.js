@@ -11,7 +11,7 @@ const root = path.dirname(__dirname);
 vbd.require.paths.unshift(path.join(root, 'node_modules'),
   path.join(root, 'node_modules/fis3/node_modules'));
 
-vbd.get('modules.commands').unshift('release', 'inspect', 'server', 'init');
+vbd.set('modules.commands', ['release', 'server', 'init', 'inspect']);
 
 // 安装本地自定义插件
 vbd.define('parser-babel', babel());

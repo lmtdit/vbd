@@ -11,7 +11,6 @@ Object.defineProperty(global, vbdInfo.name, {
   value: vbdInfo.name
 });
 
-
 // 封装一个递归创建文件夹的函数，因为fis3.mkdir不支持递归创建
 const mkdirsSync = vbd.mkdirsSync = (dir, mode) => {
   if (fs.existsSync(dir)) return true;
@@ -27,7 +26,7 @@ let isProjectRenamed = false;
 const getTempRootFn = vbd.project.getTempRoot;
 vbd.project.getTempRoot = () => {
   if (!isProjectRenamed) {
-    const appInfo = require(vbd.project.getProjectPath('package.json'));
+    const appInfo = require('../package.json');
     const tempRootPath = path.join(getTempRootFn(), appInfo.name || '');
     vbd.mkdirsSync(tempRootPath);
     vbd.project.setTempRoot(tempRootPath);
@@ -55,8 +54,6 @@ const defineFn = vbd.define = (...args) => {
 
 // 把当前项目名作为第三方插件的前缀
 vbd.require.prefixes.unshift(vbdInfo.name);
-
-//
 const cliRunFn = vbd.cli.run;
 Object.assign(vbd.cli, {
   name: vbdInfo.name, // 修改项目名称
@@ -64,12 +61,9 @@ Object.assign(vbd.cli, {
     vbd.log.info(vbdInfo.version);
   },
   run: (argv, env, ...opts) => {
-    // 插件的加载优先从当前项目的 node_modules 目录查找
-    const paths = vbd.require.paths;
-    const dir = path.join(env.cwd, 'node_modules');
-    if (paths.indexOf(dir) === -1) vbd.require.paths.unshift(dir);
     const cmdList = argv._;
-    const command = cmdList.shift();
+    const command = cmdList[0];
+    // 从新定义server 和 init
     switch (command) {
       case 'server': {
         if (!argv.port) argv.port = '5000';
@@ -81,8 +75,13 @@ Object.assign(vbd.cli, {
         return require('./commands/init')(vbd)(argv, env, ...opts);
         break;
       }
-      default:
+      default: {
+        // 插件的加载优先从当前项目的 node_modules 目录查找
+        const paths = vbd.require.paths;
+        const dir = path.join(env.cwd, 'node_modules');
+        if (paths.indexOf(dir) === -1) vbd.require.paths.unshift(dir);
         return cliRunFn(argv, env, ...opts);
+      }
     }
   }
 });

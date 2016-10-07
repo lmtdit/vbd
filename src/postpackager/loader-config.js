@@ -1,3 +1,3 @@
 module.exports = (ret, conf, setting, opt) => {
-  // console.log(ret.ids);
+  console.log(Object.keys(ret.src));
 };
