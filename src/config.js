@@ -4,7 +4,7 @@ module.exports = (vbd) => {
     ['**', {
       domain: vbd.get('domain').dev
     }],
-    ['!{libs,apps,widgets,pages,views}/**', {
+    ['!{libs,apps,components,pages,views}/**', {
       release: false
     }],
     ['**.css', {
@@ -13,56 +13,75 @@ module.exports = (vbd) => {
     ['**.es', {
       parser: vbd.plugin('babel-es2015')
     }],
-    ['{**.md,vbd-conf.js,package.json}', {
+    ['{**.md,vbd-conf.js,**.json}', {
       release: false
     }],
     ['**.{html,tpl}', {
       isHtmlLike: true,
-      release: false,
       parser: vbd.plugin('minify-html')
     }],
-    ['libs/(**)', {
-      release: '/l/$1',
+    [/\/(.+)?views\/(.+)/, {
+      release: '/$1v/$2',
+      url: '/$1v/$2'
+    }],
+    [/\/(.+)?views\/css\/(.+)/, {
+      release: '/$1v/c/$2',
+      url: '/$1v/c/$2'
+    }],
+    [/\/(.+)?views\/img\/(.+)/, {
+      release: '/$1v/i/$2',
+      url: '/$1v/i/$2'
+    }],
+    [/\/(.+)?views\/libs\/(.+)/, {
+      release: '/$1v/l/$2',
+      url: '/$1v/l/$2',
       isMod: false
     }],
-    ['libs/css/(**)', {
-      release: '/l/c/$1'
-    }],
-    ['libs/img/(**)', {
-      release: '/l/i/$1'
-    }],
-    ['libs/js/(**)', {
-      release: '/l/j/$1'
-    }],
-    ['pages/(**)', {
-      release: 'p/$1',
+    [/\/(.+)?views\/pages\/(.+)/, {
+      id: '$1v/p/$2',
+      moduleId: '$1v/p/$2',
+      release: '/$1v/p/$2',
+      url: '/$1v/p/$2',
+      isEntry: true,
       isMod: false
     }],
-    ['widgets/(**)', {
-      release: 'w/$1',
+    [/\/pages\/(.+)(\.html)/, {
+      release: '/$1$2',
+      url: '/$1$2',
+      parser: null,
       isMod: false
     }],
-    ['apps/(**)', {
-      release: 'w/$1',
-      isMod: false
-    }],
-    [/widgets\/(.*?([^\/]+))\/\2(\.js)/, {
-      id: 'w/$1',
-      moduleId: 'w/$1',
-      release: '/w/$1/$2$3',
-      url: '/w/$1/$2$3',
+    [/\/(.+)?common\/(.+)/, {
+      id: '$1c/$2',
+      moduleId: '$1c/$2',
+      release: '/$1c/$2',
+      url: '/$1c/$2',
       isMod: true,
-      isComponent: true,
       useSameNameRequire: true
     }],
-    [/apps\/(.*?([^\/]+))\/\2(\.js)/, {
-      id: 'a/$1',
-      moduleId: 'a/$1',
-      release: '/a/$1/$2$3',
-      url: '/a/$1/$2$3',
+    [/\/(.+)?components\/(.+)/, {
+      release: '/$1cp/$2',
+      url: '/$1cp/$2',
+      isMod: true
+    }],
+    [/\/(.+)?components\/(.*?([^\/]+))\/\2(\.js)/, {
+      id: '$1cp/$2',
+      moduleId: '$1cp/$2',
+      release: '/$1cp/$2/$3$4',
+      url: '/$1cp/$2/$3$4',
       isMod: true,
-      isComponent: true,
       useSameNameRequire: true
+    }],
+    [/\/(.+)?components\/(.*?([^\/]+))\/\2(\.css)/, {
+      id: '$1cp/$2/css',
+      moduleId: '$1cp/$2/css',
+      release: '/$1cp/$2/$3$4',
+      url: '/$1cp/$2/$3$4',
+      isMod: true,
+      useSameNameRequire: true
+    }],
+    ['**components/**.{html,tpl}', {
+      release: false
     }],
     [/(.*)?(_[^\/]+)(.*)/i, {
       release: false
