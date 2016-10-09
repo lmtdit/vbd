@@ -42,7 +42,7 @@ module.exports = (o) => {
       filePrefix.shift();
       [].forEach.call(files, (key, index) => {
         if (sendData) {
-          const file = path.join(filePrefix[0], key);
+          const file = filePrefix[0] ? path.join(filePrefix[0], key) : key;
           const filePath = getRealPath(assetsPath, file);
           sendData = sendData && !!filePath;
           const ext = path.extname(filePath);
