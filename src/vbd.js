@@ -26,7 +26,7 @@ let isProjectRenamed = false;
 const getTempRootFn = vbd.project.getTempRoot;
 vbd.project.getTempRoot = () => {
   if (!isProjectRenamed) {
-    const appInfo = require('../package.json');
+    const appInfo = require(path.join(vbd.project.getProjectPath(), 'package.json'));
     const tempRootPath = path.join(getTempRootFn(), appInfo.name || '');
     vbd.mkdirsSync(tempRootPath);
     vbd.project.setTempRoot(tempRootPath);

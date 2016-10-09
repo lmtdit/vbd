@@ -14,57 +14,58 @@ module.exports = (o) => {
     let fileExt = null;
     const req = this.request;
     const url = req.url;
+
     if (opts.routerReg.test(url)) {
       const etag = cache && cache.get(url);
       const cons = [];
-      if (req.header['if-none-match'] === etag) {
-        this.status = 304;
-      } else {
-        const assetsPath = opts.assetsPath;
-        const comboTag = opts.comboTag;
-        const comboDirTag = opts.comboDirTag;
-        const comboModSplit = opts.comboModSplit;
-        const addToList = (file) => {
-          let con = cache && cache.get(file);
-          if (!con) {
-            try {
-              con = fs.readFileSync(file, {
-                encoding: 'utf8'
-              });
-              if (cache) cache.set(file, con);
-            } catch (e) {
-              sendData = false;
-            }
+      const assetsPath = opts.assetsPath;
+      const comboTag = opts.comboTag;
+      const comboDirTag = opts.comboDirTag;
+      const comboModSplit = opts.comboModSplit;
+      const addToList = (file) => {
+        let con = cache && cache.get(file);
+        if (!con) {
+          try {
+            con = fs.readFileSync(file, {
+              encoding: 'utf8'
+            });
+            if (cache) cache.set(file, con);
+          } catch (e) {
+            sendData = false;
           }
-          cons.push(con);
-        };
-        const comboArr = url.split(comboTag);
-        const filePrefix = comboArr[0].split(comboDirTag);
-        const files = comboArr[1].split(comboModSplit);
-        filePrefix.shift();
-        [].forEach.call(files, (key, index) => {
-          if (sendData) {
-            const file = path.join(filePrefix[0], key);
-            const filePath = getRealPath(assetsPath, file);
-            sendData = sendData && !!filePath;
-            const ext = path.extname(filePath);
-            if (index === 0 && ['.css', '.js'].indexOf(ext) !== -1) fileExt = ext;
-            if (fileExt === ext) addToList(filePath);
-          }
-        });
-        if (sendData && cons.length) {
-          const conString = cons.join('\n');
-          const conMd5 = md5(conString);
+        }
+        cons.push(con);
+      };
+      const comboArr = url.split(comboTag);
+      const filePrefix = comboArr[0].split(comboDirTag);
+      const files = comboArr[1].split(comboModSplit);
+      filePrefix.shift();
+      [].forEach.call(files, (key, index) => {
+        if (sendData) {
+          const file = path.join(filePrefix[0], key);
+          const filePath = getRealPath(assetsPath, file);
+          sendData = sendData && !!filePath;
+          const ext = path.extname(filePath);
+          if (index === 0 && ['.css', '.js'].indexOf(ext) !== -1) fileExt = ext;
+          if (fileExt === ext) addToList(filePath);
+        }
+      });
+      if (sendData && cons.length) {
+        const conString = cons.join('\n');
+        const conMd5 = md5(conString);
+        if (conMd5 === etag) {
+          this.status = 304;
+        } else {
           this.type = fileExt.slice(1);
           this.status = 200;
           this.set({ 'Cache-Control': `publish,max-age=${opts.maxAge}` });
           this.set({ Etag: conMd5 });
           cache.set(url, conMd5);
           this.body = conString;
-        } else {
-          this.status = 404;
-          this.body = 'Not Found';
         }
+      } else {
+        this.status = 404;
+        this.body = 'Not Found';
       }
     }
     yield next;

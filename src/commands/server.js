@@ -14,10 +14,7 @@ const serv = module.exports = (vbd) => {
   const reg = /\/\w+\/\w+\//;
   const userPath = osType === 'Darwin' ?
     reg.exec(__dirname)[0] : 'C:/Users/Administrator/AppData/Local';
-  const tempRoot = path.join(userPath, '/.fis3-tmp');
-  const accessLogStream = fs.createWriteStream(`${tempRoot}/access.log`, {
-    flags: 'a'
-  });
+  const tempRoot = path.join(userPath, '/.vbd-tmp');
   return (argv, env, ...opts) => {
     const projectName = path.basename(env.cwd);
     const serverRoot = path.join(tempRoot, projectName, 'www');
@@ -34,9 +31,8 @@ const serv = module.exports = (vbd) => {
     app.use(favicon(`${serverRoot}/favicon.ico`))
       .use(koaBody())
       .use(session(app))
-      // .use(function* (){})
-      .use(combo(comboSetting))
       .use(koaStatic(serverRoot))
+      .use(combo(comboSetting))
       .listen(port, () => {
         vbd.log.info('Static path: %s', serverRoot);
         vbd.log.info('WebServer run at port %s', port);

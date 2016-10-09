@@ -37,13 +37,13 @@ module.exports = (vbd) => {
       url: '/$1v/l/$2',
       isMod: false
     }],
-    [/\/(.+)?views\/pages\/(.+)/, {
+    [/\/(.+)?views\/pages\/(.+)(\.:?js|css)/, {
       id: '$1v/p/$2',
       moduleId: '$1v/p/$2',
       release: '/$1v/p/$2',
       url: '/$1v/p/$2',
       isEntry: true,
-      isMod: false
+      isMod: true
     }],
     [/\/pages\/(.+)(\.html)/, {
       release: '/$1$2',
