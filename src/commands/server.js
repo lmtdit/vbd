@@ -7,6 +7,7 @@ import koaBody from 'koa-body';
 import session from 'koa-session';
 import koaStatic from 'koa-static';
 import combo from './server/combo';
+import log from './server/log';
 
 const app = koa();
 const osType = os.type();
@@ -15,6 +16,7 @@ const serv = module.exports = (vbd) => {
   const userPath = osType === 'Darwin' ?
     reg.exec(__dirname)[0] : 'C:/Users/Administrator/AppData/Local';
   const tempRoot = path.join(userPath, '/.vbd-tmp');
+  const print = vbd.log.info;
   return (argv, env, ...opts) => {
     const projectName = path.basename(env.cwd);
     const serverRoot = path.join(tempRoot, projectName, 'www');
@@ -31,11 +33,12 @@ const serv = module.exports = (vbd) => {
     app.use(favicon(`${serverRoot}/favicon.ico`))
       .use(koaBody())
       .use(session(app))
-      .use(koaStatic(serverRoot))
       .use(combo(comboSetting))
+      .use(koaStatic(serverRoot))
+      .use(log(print))
       .listen(port, () => {
-        vbd.log.info('Static path: %s', serverRoot);
-        vbd.log.info('WebServer run at port %s', port);
+        print('Static path: %s', serverRoot);
+        print('WebServer run at port %s', port);
       });
   };
 };

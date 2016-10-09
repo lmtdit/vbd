@@ -14,7 +14,7 @@ module.exports = (o) => {
     let fileExt = null;
     const req = this.request;
     const url = req.url;
-
+    this.isCombo = false;
     if (opts.routerReg.test(url)) {
       const etag = cache && cache.get(url);
       const cons = [];
@@ -63,6 +63,7 @@ module.exports = (o) => {
           cache.set(url, conMd5);
           this.body = conString;
         }
+        this.isCombo = true;
       } else {
         this.status = 404;
         this.body = 'Not Found';
