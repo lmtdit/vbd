@@ -1,4 +1,3 @@
-import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import koa from 'koa';
@@ -6,12 +5,12 @@ import favicon from 'koa-favicon';
 import koaBody from 'koa-body';
 import session from 'koa-session';
 import koaStatic from 'koa-static';
-import combo from './server/combo';
-import log from './server/log';
+import koaCombo from 'koa-static-combo';
+import logger from 'koa-log4js';
 
 const app = koa();
 const osType = os.type();
-const serv = module.exports = (vbd) => {
+module.exports = (vbd) => {
   const reg = /\/\w+\/\w+\//;
   const userPath = osType === 'Darwin' ?
     reg.exec(__dirname)[0] : 'C:/Users/Administrator/AppData/Local';
@@ -20,8 +19,8 @@ const serv = module.exports = (vbd) => {
   return (argv, env, ...opts) => {
     const projectName = path.basename(env.cwd);
     const serverRoot = path.join(tempRoot, projectName, 'www');
-    const port = argv.port || '5000';
     const comboSetting = {
+      port: argv.port || '5000',
       assetsPath: serverRoot,
       routerReg: /^(\/co)(;.+)?(\?\?)(.+)/i,
       comboTag: '??',
@@ -33,12 +32,15 @@ const serv = module.exports = (vbd) => {
     app.use(favicon(`${serverRoot}/favicon.ico`))
       .use(koaBody())
       .use(session(app))
-      .use(combo(comboSetting))
-      .use(koaStatic(serverRoot))
-      .use(log(print))
-      .listen(port, () => {
+      .use(koaCombo(comboSetting))
+      .use(koaStatic(serverRoot, {
+        maxage: comboSetting.maxAge,
+        defer: true
+      }))
+      .use(logger())
+      .listen(comboSetting.port, () => {
         print('Static path: %s', serverRoot);
-        print('WebServer run at port %s', port);
+        print('WebServer run at port %s', comboSetting.port);
       });
   };
 };

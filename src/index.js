@@ -1,6 +1,5 @@
 import path from 'path';
 import vbd from './vbd';
-import babel from './parser/babel';
 import config from './config';
 
 module.exports = vbd;
@@ -14,9 +13,8 @@ vbd.require.paths.unshift(path.join(root, 'node_modules'),
 vbd.set('modules.commands', ['release', 'server', 'init', 'inspect']);
 
 // 安装本地自定义插件
-vbd.define('parser-babel', babel());
-vbd.define('parser-babel-node', babel(babel.NODE));
-vbd.define('parser-babel-es2015', babel(babel.ESNEXT));
+
+vbd.define('parser-babel', require('./parser/babel'));
 vbd.define('parser-minify-html', require('./parser/minify'));
 vbd.define('optimizer-clean-css', require('./optimizer/clean-css'));
 vbd.define('postpackager-loader-config', require('./postpackager/loader-config'));

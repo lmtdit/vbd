@@ -1,6 +1,6 @@
 {
   "name": "vbd",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A front-end construction base on fis3",
   "main": "./lib",
   "bin": {
@@ -9,7 +9,7 @@
   "scripts": {
     "autod": "autod",
     "watch": "fis3 release -wLd lib",
-    "clean": "[ -d lib ] && rm -f lib || true",
+    "clean": "[ -d lib ] && rm -r lib || true",
     "build": "npm run clean; fis3 release -cud lib",
     "lint": "eslint src test bin",
     "test": "npm run lint && mocha test/**.test.js",
@@ -24,12 +24,14 @@
     "fis3": "~3.4.24",
     "fis3-hook-commonjs": "~0.1.25",
     "koa": "~1.2.4",
-    "koa-body": "~1.5.0",
+    "koa-body": "~1.6.0",
     "koa-favicon": "~1.2.1",
-    "koa-morgan": "^1.0.1",
+    "koa-log4js": "~0.0.1",
     "koa-session": "~3.3.1",
+    "koa-static": "~2.0.0",
+    "koa-static-cache": "~3.1.7",
+    "koa-static-combo": "~0.1.1",
     "liftoff": "~2.3.0",
-    "lru-cache": "~4.0.1",
     "minimist": "~1.2.0"
   },
   "devDependencies": {
@@ -45,12 +47,12 @@
     "babel-preset-es2015": "^6.16.0",
     "babel-preset-stage-1": "^6.16.0",
     "babel-register": "^6.14.0",
-    "eslint": "^3.7.0",
+    "eslint": "^3.7.1",
     "eslint-config-airbnb": "^12.0.0",
     "eslint-plugin-import": "^2.0.0",
     "mocha": "^3.1.0",
     "should": "^11.1.0",
-    "thunk-mocha": "^1.0.6"
+    "thunk-mocha": "^1.0.7"
   },
   "directories": {
     "test": "test"

@@ -3,7 +3,7 @@ module.exports = {
   prefix: '~',
   devprefix: '^',
   exclude: [
-    'test/fixtures'
+    'test'
   ],
   dep: [
     'fis3-hook-commonjs',

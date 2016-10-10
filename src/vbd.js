@@ -3,6 +3,7 @@ import path from 'path';
 import fis from 'fis3';
 
 const vbdInfo = require('../package.json');
+
 const vbd = module.exports = Object.create(fis);
 
 // 定义全局的 vdb 对象
@@ -26,7 +27,7 @@ let isProjectRenamed = false;
 const getTempRootFn = vbd.project.getTempRoot;
 vbd.project.getTempRoot = () => {
   if (!isProjectRenamed) {
-    const appInfo = require(path.join(vbd.project.getProjectPath(), 'package.json'));
+    const appInfo = require(path.join(vbd.project.getProjectPath(), 'package.json')); // eslint-disable-line
     const tempRootPath = path.join(getTempRootFn(), appInfo.name || '');
     vbd.mkdirsSync(tempRootPath);
     vbd.project.setTempRoot(tempRootPath);
@@ -38,7 +39,7 @@ vbd.project.getTempRoot = () => {
 
 // 本地插件定义入口
 const typeOf = obj => Object.prototype.toString.call(obj).slice(8, -1);
-const defineFn = vbd.define = (...args) => {
+vbd.define = (...args) => {
   const arg = args.pop();
   const type = typeOf(arg);
   if (type !== 'Function' && type !== 'object') {
@@ -67,13 +68,11 @@ Object.assign(vbd.cli, {
     switch (command) {
       case 'server': {
         if (!argv.port) argv.port = '5000';
-        return require('./commands/server')(vbd)(argv, env, ...opts);
-        break;
+        return require('./commands/server')(vbd)(argv, env, ...opts); // eslint-disable-line
       }
       case 'init': {
         vbd.log.info('Initialize Project ...\n');
-        return require('./commands/init')(vbd)(argv, env, ...opts);
-        break;
+        return require('./commands/init')(vbd)(argv, env, ...opts); // eslint-disable-line
       }
       default: {
         // 插件的加载优先从当前项目的 node_modules 目录查找
