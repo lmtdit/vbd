@@ -4,8 +4,8 @@ import koa from 'koa';
 import favicon from 'koa-favicon';
 import koaBody from 'koa-body';
 import session from 'koa-session';
-import koaStatic from 'koa-static';
 import koaCombo from 'koa-static-combo';
+import koaStatic from 'koa-static';
 import logger from 'koa-log4js';
 
 const app = koa();
@@ -17,7 +17,8 @@ module.exports = (vbd) => {
   const tempRoot = path.join(userPath, '/.vbd-tmp');
   const print = vbd.log.info;
   return (argv, env, ...opts) => {
-    const projectName = path.basename(env.cwd);
+    const projectInfo = require(path.join(env.cwd, 'package.json')); // eslint-disable-line
+    const projectName = projectInfo.name;
     const serverRoot = path.join(tempRoot, projectName, 'www');
     const comboSetting = {
       port: argv.port || '5000',
@@ -34,7 +35,7 @@ module.exports = (vbd) => {
       .use(session(app))
       .use(koaCombo(comboSetting))
       .use(koaStatic(serverRoot, {
-        maxage: comboSetting.maxAge,
+        maxage: 0,
         defer: true
       }))
       .use(logger())

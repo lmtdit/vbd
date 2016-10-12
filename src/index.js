@@ -39,7 +39,10 @@ vbd.set('project.ignore', [
   dev: '',
   test: `//test.${cdnDomain}`,
   prod: `//${cdnDomain}`
-}).set('comboPattern', '/co/??%s');
+}).set('loader-config', {
+  urlPattern: '',
+  comboPattern: '/co??%s'
+});
 
 // 生成项目配置
 const conf = config(vbd);

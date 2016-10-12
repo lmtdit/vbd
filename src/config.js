@@ -18,6 +18,7 @@ module.exports = (vbd) => {
     }],
     ['**.{html,tpl}', {
       isHtmlLike: true,
+      useMap: true,
       parser: vbd.plugin('minify-html')
     }],
     [/\/(.+)?views\/(.+)/, {
@@ -48,18 +49,30 @@ module.exports = (vbd) => {
       useBabel: true
     }],
     [/\/pages\/(.+)(\.html)/, {
+      id: '$1$2',
       release: '/$1$2',
       url: '/$1$2',
       parser: null,
+      isEntry: true,
       isMod: false
     }],
     [/\/(.+)?common\/(.+)/, {
-      id: '$1c/$2',
-      moduleId: '$1c/$2',
       release: '/$1c/$2',
       url: '/$1c/$2',
-      isMod: true,
+      isMod: true
+    }],
+    [/\/(.+)?common\/(.+)(\.js)/, {
+      id: '$1c/$2',
+      moduleId: '$1c/$2',
+      release: '/$1c/$2$3',
+      url: '/$1c/$2$3',
       useSameNameRequire: true
+    }],
+    [/\/(.+)?common\/(.+)(\.css)/, {
+      id: '$1c/$2$3',
+      moduleId: '$1c/$2$3',
+      release: '/$1c/$2$3',
+      url: '/$1c/$2$3'
     }],
     [/\/(.+)?components\/(.+)/, {
       release: '/$1cp/$2',
@@ -75,11 +88,11 @@ module.exports = (vbd) => {
       useSameNameRequire: true,
       useBabel: true
     }],
-    [/\/(.+)?components\/(.*?([^\/]+))\/\2(\.css)/, {
-      id: '$1cp/$2/css',
-      moduleId: '$1cp/$2/css',
-      release: '/$1cp/$2/$3$4',
-      url: '/$1cp/$2/$3$4',
+    [/\/(.+)?components\/(.+)(\.css)/, {
+      id: '$1cp/$2$3',
+      moduleId: '$1cp/$2$3',
+      release: '/$1cp/$2$3',
+      url: '/$1cp/$2$3',
       isMod: true,
       useSameNameRequire: true
     }],

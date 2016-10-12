@@ -9,8 +9,10 @@ const vbd = module.exports = Object.create(fis);
 // 定义全局的 vdb 对象
 Object.defineProperty(global, vbdInfo.name, {
   enumerable: true,
-  value: vbdInfo.name
+  value: vbd
 });
+
+Object.assign(global.vbd, vbd);
 
 // 封装一个递归创建文件夹的函数，因为fis3.mkdir不支持递归创建
 const mkdirsSync = vbd.mkdirsSync = (dir, mode) => {
@@ -66,21 +68,24 @@ Object.assign(vbd.cli, {
     const command = cmdList[0];
     // 从新定义server 和 init
     switch (command) {
-      case 'server': {
-        if (!argv.port) argv.port = '5000';
-        return require('./commands/server')(vbd)(argv, env, ...opts); // eslint-disable-line
-      }
-      case 'init': {
-        vbd.log.info('Initialize Project ...\n');
-        return require('./commands/init')(vbd)(argv, env, ...opts); // eslint-disable-line
-      }
-      default: {
-        // 插件的加载优先从当前项目的 node_modules 目录查找
-        const paths = vbd.require.paths;
-        const dir = path.join(env.cwd, 'node_modules');
-        if (paths.indexOf(dir) === -1) vbd.require.paths.unshift(dir);
-        return cliRunFn(argv, env, ...opts);
-      }
+      case 'server':
+        {
+          if (!argv.port) argv.port = '5000';
+          return require('./commands/server')(vbd)(argv, env, ...opts); // eslint-disable-line
+        }
+      case 'init':
+        {
+          vbd.log.info('Initialize Project ...\n');
+          return require('./commands/init')(vbd)(argv, env, ...opts); // eslint-disable-line
+        }
+      default:
+        {
+          // 插件的加载优先从当前项目的 node_modules 目录查找
+          const paths = vbd.require.paths;
+          const dir = path.join(env.cwd, 'node_modules');
+          if (paths.indexOf(dir) === -1) vbd.require.paths.unshift(dir);
+          return cliRunFn(argv, env, ...opts);
+        }
     }
   }
 });
