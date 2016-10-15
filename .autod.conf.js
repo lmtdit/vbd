@@ -7,6 +7,8 @@ module.exports = {
   ],
   dep: [
     'fis3-hook-commonjs',
+    'fis3-preprocessor-js-require-css',
+    'fis3-preprocessor-js-require-file',
     'babel-register',
     'babel-core'
   ],

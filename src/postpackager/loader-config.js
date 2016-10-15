@@ -4,13 +4,12 @@
 module.exports = (ret, conf, setting, opt) => {
   const currMedia = vbd.project.currentMedia();
   const VBD_CONFIG_REG = /\b__VBD_CONFIG__\b/g;
+  const VBD_CONFIG_JS_REG = /\b__CONFIG_JS__\b/;
   const ids = Object.keys(ret.ids);
   const loaderConfig = getLoaderConfig(currMedia);
   const tplList = [];
   [].forEach.call(ids, (key) => {
     const file = ret.ids[key];
-
-
     // compile css to js module
     if (file.isCssLike && file.isMod) {
       const cssId = file.getId();
@@ -47,25 +46,35 @@ module.exports = (ret, conf, setting, opt) => {
     // mark tpl
     if (file.isHtmlLike && file.isEntry) tplList.push(key);
   });
+  // build loadconfig file
+  const configStr = JSON.stringify(loaderConfig, null, currMedia !== 'dev' ? 0 : 2);
+  const configFileName = 'vconfig.js';
+  const configFile = vbd.file(vbd.project.getProjectPath(configFileName));
+  configFile.setContent(`require.config(${configStr})`);
+  configFile.id = 'vconfig';
+  configFile.moduleId = 'vconfig';
+  configFile.release = '/vconfig.js';
+  configFile.isMod = false;
+  configFile.useHash = currMedia !== 'dev';
+  configFile.domain = loaderConfig.domain;
+  let configJsUri = configFile.domain + configFile.getHashRelease();
+  if (currMedia === 'dev') {
+    configJsUri = `${configFile.domain + configFile.release}?hash=${configFile.getHash()}`;
+  }
+  ret.pkg[configFileName] = configFile;
 
   // compile tpl
-  const configStr = JSON.stringify(loaderConfig, null, currMedia !== 'dev' ? 0 : 2);
   [].forEach.call(tplList, (key) => {
     const file = ret.ids[key];
-    const tplCon = file.getContent().replace(VBD_CONFIG_REG, configStr);
+    const tplCon = file.getContent()
+      .replace(VBD_CONFIG_REG, configStr)
+      .replace(VBD_CONFIG_JS_REG, configJsUri);
     const tplFile = vbd.file(vbd.project.getProjectPath(key));
     tplFile.setContent(tplCon);
     tplFile.release = file.release;
     ret.pkg[key] = tplFile;
     file.release = false;
   });
-
-  // build loadconfig file
-  const configFileName = 'vconfig.js';
-  const configFile = vbd.file(vbd.project.getProjectPath(configFileName));
-  configFile.setContent(`require.config(${configStr})`);
-  configFile.release = '/vconfig.js';
-  ret.pkg[configFileName] = configFile;
 };
 
 function getLoaderConfig(currMedia) {

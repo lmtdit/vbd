@@ -11,7 +11,11 @@ module.exports = (vbd) => {
       useSprite: true
     }],
     ['{apps,components,views/pages}/**.{js,es}', {
-      parser: vbd.plugin('babel')
+      parser: vbd.plugin('babel'),
+      preprocessor: [
+        vbd.plugin('js-require-file'),
+        vbd.plugin('js-require-css')
+      ]
     }],
     ['{**.md,vbd-conf.js,**.json}', {
       release: false
@@ -34,10 +38,10 @@ module.exports = (vbd) => {
       url: '/$1v/i/$2'
     }],
     [/\/(.+)?views\/libs\/(.+)/, {
+      parser: null,
       release: '/$1v/l/$2',
       url: '/$1v/l/$2',
-      isMod: false,
-      parser: null
+      isMod: false
     }],
     [/\/(.+)?views\/pages\/(.+)(\.:?js|css)/, {
       id: '$1v/p/$2',
@@ -57,6 +61,7 @@ module.exports = (vbd) => {
       isMod: false
     }],
     [/\/(.+)?common\/(.+)/, {
+      parser: null,
       release: '/$1c/$2',
       url: '/$1c/$2',
       isMod: true

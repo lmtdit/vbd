@@ -5,8 +5,9 @@ import favicon from 'koa-favicon';
 import koaBody from 'koa-body';
 import session from 'koa-session';
 import koaCombo from 'koa-static-combo';
-import koaStatic from 'koa-static';
 import logger from 'koa-log4js';
+import koaStatic from './static';
+
 
 const app = koa();
 const osType = os.type();
@@ -34,9 +35,9 @@ module.exports = (vbd) => {
       .use(koaBody())
       .use(session(app))
       .use(koaCombo(comboSetting))
-      .use(koaStatic(serverRoot, {
-        maxage: 0,
-        defer: true
+      .use(koaStatic({
+        root: comboSetting.assetsPath,
+        maxage: 0
       }))
       .use(logger())
       .listen(comboSetting.port, () => {
