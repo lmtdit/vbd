@@ -5,7 +5,7 @@ import favicon from 'koa-favicon';
 import koaBody from 'koa-body';
 import session from 'koa-session';
 import koaCombo from 'koa-static-combo';
-import logger from 'koa-log4js';
+// import logger from 'koa-log4js';
 import koaStatic from './static';
 
 
@@ -39,7 +39,7 @@ module.exports = (vbd) => {
         root: comboSetting.assetsPath,
         maxage: 0
       }))
-      .use(logger())
+      // .use(logger())
       .listen(comboSetting.port, () => {
         print('Static path: %s', serverRoot);
         print('WebServer run at port %s', comboSetting.port);

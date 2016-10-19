@@ -35,7 +35,8 @@ module.exports = (vbd) => {
     }],
     [/\/(.+)?views\/img\/(.+)/, {
       release: '/$1v/i/$2',
-      url: '/$1v/i/$2'
+      url: '/$1v/i/$2',
+      isMod: false
     }],
     [/\/(.+)?views\/libs\/(.+)/, {
       parser: null,
@@ -65,6 +66,11 @@ module.exports = (vbd) => {
       release: '/$1c/$2',
       url: '/$1c/$2',
       isMod: true
+    }],
+    [/\/(.+)?data\/(.+)/, {
+      parser: null,
+      release: '/$1data/$2',
+      url: '/$1data/$2'
     }],
     [/\/(.+)?common\/(.+)(\.js)/, {
       id: '$1c/$2',
@@ -104,7 +110,7 @@ module.exports = (vbd) => {
     ['**components/**.{html,tpl}', {
       release: false
     }],
-    [/(.*)?(_[^\/]+)(.*)/i, {
+    [/(.+)?(\/_)(.+)/i, {
       release: false
     }],
     ['::packager', {
